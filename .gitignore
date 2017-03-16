@@ -1,6 +1,3 @@
 composer.lock
 composer.phar
 logs/gearmanui.log
-config.yml
-vendor/
-web/vendor/
