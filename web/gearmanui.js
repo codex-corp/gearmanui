@@ -4,18 +4,26 @@
 
 var gearmanui = angular.module('gearmanui', ['ngResource', 'ngRoute'])
 
-    // Configure routes
+// Configure routes
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/status', {templateUrl:'status'})
             .when('/workers', {templateUrl:'workers'})
             .when('/servers', {templateUrl:'servers'})
+            .when('/log', {templateUrl:'log'})
             .otherwise({redirectTo:'/status'});
     }])
 
     // Service : Gearman info callback
     .factory('GearmanInfo', function ($resource) {
         return $resource('info', {});
+    })
+
+    // Service : Gearman log callback
+    .factory('GearmanLog', function($resource) {
+        return $resource('data?worker=:worker', {
+            worker: 'appointment.appointment_notification'
+        });
     })
 
     // Service : Handle server errors
@@ -37,6 +45,16 @@ var gearmanui = angular.module('gearmanui', ['ngResource', 'ngRoute'])
         };
 
         return wrapper;
+    })
+
+    .factory('GearmanLogHandler', function() {
+
+        var wrapper = {};
+        wrapper.log = function(arg) {
+
+        }
+        return wrapper;
+
     })
 
     // Service : Transfort server incomming data info model tables.
@@ -138,7 +156,7 @@ gearmanui.controller('NavigationCtrl', function($scope, $location) {
     };
 });
 
-gearmanui.controller('InfoCtrl', function($scope, GearmanSettings, GearmanInfo, GearmanInfoHandler, GearmanErrorHandler) {
+gearmanui.controller('InfoCtrl', function($scope, GearmanSettings, GearmanLog, GearmanLogHandler, GearmanInfo, GearmanInfoHandler, GearmanErrorHandler) {
     /*
      * TODO Handle communication errors.
      */
@@ -154,6 +172,15 @@ gearmanui.controller('InfoCtrl', function($scope, GearmanSettings, GearmanInfo, 
             $scope.errors = GearmanErrorHandler.get(
                 [{'error': "Server Error while accessing URL '/info': "+ err.status + " - " + err.statusText}]
             );
+        });
+
+        GearmanLog.query(function(data){
+            $scope.log = GearmanLogHandler.log(data);
+            var log = document.getElementById('log-textarea');
+            if (log) {
+                log.textContent = data[0]['data'];
+            }
+
         });
     }
 
