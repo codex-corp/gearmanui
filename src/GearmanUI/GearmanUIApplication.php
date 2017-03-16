@@ -55,5 +55,7 @@ class GearmanUIApplication extends Application
         $this->register(new ConfigurationProvider());
 
         $this->register(new ControllerProvider());
+
+        $this->register(new TaskRemoverProvider());
      }
 }

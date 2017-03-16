@@ -26,6 +26,10 @@ var gearmanui = angular.module('gearmanui', ['ngResource', 'ngRoute'])
         });
     })
 
+    .factory('GearmanJobRemover', function($resource){
+        return $resource('remove');
+    })
+
     // Service : Handle server errors
     .factory('GearmanErrorHandler', function () {
 
@@ -156,7 +160,14 @@ gearmanui.controller('NavigationCtrl', function($scope, $location) {
     };
 });
 
-gearmanui.controller('InfoCtrl', function($scope, GearmanSettings, GearmanLog, GearmanLogHandler, GearmanInfo, GearmanInfoHandler, GearmanErrorHandler) {
+gearmanui.controller('InfoCtrl', function($scope, GearmanSettings, GearmanLog, GearmanLogHandler, GearmanInfo, GearmanInfoHandler, GearmanErrorHandler, GearmanJobRemover) {
+
+    $scope.removeJobs = function(item) {
+        GearmanJobRemover.delete({
+            'function': item.function
+        });
+    };
+
     /*
      * TODO Handle communication errors.
      */
